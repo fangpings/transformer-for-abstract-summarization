@@ -77,8 +77,8 @@ if __name__ == "__main__":
         sort_within_batch=False, 
         repeat=True
     )
-    train_iter = Batch(train_iter, "source", "target")
-    val_iter = Batch(val_iter, "source", "target")
+    train_iter = Batch(train_iter, "source", "target", device)
+    val_iter = Batch(val_iter, "source", "target", device)
     logger.info('Batch iterator created.')
 
     pre_trained_vector, embz_size, padding_idx = embedding_param(SAMPLE_DATA_PATH, TEXT, pre_trained_vector_type)

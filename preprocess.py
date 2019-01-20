@@ -7,9 +7,10 @@ import numpy as np
 logger = logging.getLogger()
 
 class Batch():
-    def __init__(self, dataset, source, target, vocabulary=None):
+    def __init__(self, dataset, source, target, device, vocabulary=None):
         self.dataset, self.source, self.target = dataset, source, target
         self.vocabulary = vocabulary
+        self.device = device
         
     def __next__(self):
         # self.init_epoch()
@@ -67,7 +68,7 @@ class Batch():
 
         seq_len = batch.size(1)
         mask2 = np.triu(np.ones((1, seq_len, seq_len), dtype='uint8'), k=1)
-        mask2 = torch.from_numpy(mask2) == 0
+        mask2 = torch.from_numpy(mask2, device=self.device) == 0
 
         return (mask1 & mask2).unsqueeze(1)
 
