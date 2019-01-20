@@ -38,12 +38,13 @@ batch_size = 64
 device = get_device()
 stack_number = 6
 heads_number = 8
+fix_length = 80
 
 #%%
 if __name__ == "__main__":
     """ Data loading and preprocessing """
     tokenizer = data.get_tokenizer('spacy')
-    TEXT = data.Field(tokenize=tokenizer, lower=True, eos_token='_eos_')
+    TEXT = data.Field(tokenize=tokenizer, lower=True, eos_token='_eos_', fix_length=fix_length)
     trn_data_fields = [("source", TEXT), ("target", TEXT)]
     trn, vld = execute_and_time(
         data.TabularDataset.splits, 
