@@ -28,6 +28,7 @@ def estimate_time(time2, time1):
     second = total % 60
     minutes = second // 60
     hours = minutes // 60
+    minutes = minutes % 60
     if hours == 0:
         return f'{minutes}min {second}s'
     else:
