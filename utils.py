@@ -23,6 +23,16 @@ def itos(input_tensor, vocab):
     input_tensor = input_tensor.data.cpu().numpy()
     return ' '.join([vocab.itos[o] for o in input_tensor])
 
+def estimate_time(time2, time1):
+    total = time2 - time1
+    second = total % 60
+    minutes = second // 60
+    hours = minutes // 60
+    if hours == 0:
+        return f'{minutes}min {second}s'
+    else:
+        return f'{hours}h {minutes}min {second}s'
+
 def execute_and_time(func, *args, **kwargs):
     before_msg = kwargs.pop('before_msg', None)
     after_msg = kwargs.pop('after_msg', None)

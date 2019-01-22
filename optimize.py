@@ -3,7 +3,7 @@ import torch.nn as nn
 import logging
 import time
 
-from utils import execute_and_time
+from utils import execute_and_time, estimate_time
 
 logger = logging.getLogger()
 
@@ -71,8 +71,7 @@ def train(model, batch_iter, iters, optimizer, criterion, print_every=500):
         
         if i % print_every == 0 and i != 0:
             time2 = time.time()
-            remaining_time = (iters - i) * ((time2 - time1) / print_every)
-            rem_str = '%d min %d s' % (remaining_time // 60, remaining_time % 60)
+            rem_str = estimate_time(time2, time1)
             logger.info(f'Iteration: {i}, loss: {loss}, estimated remaining time: {rem_str}')
             time1 = time2
             

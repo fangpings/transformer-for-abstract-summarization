@@ -77,8 +77,8 @@ if __name__ == "__main__":
         sort_within_batch=False, 
         repeat=True
     )
-    train_iter = Batch(train_iter, "source", "target", device)
-    val_iter = Batch(val_iter, "source", "target", device)
+    train_iter = Batch(train_iter, "source", "target", device, vocabulary)
+    val_iter = Batch(val_iter, "source", "target", device, vocabulary)
     logger.info('Batch iterator created.')
 
     pre_trained_vector, embz_size, padding_idx = embedding_param(SAMPLE_DATA_PATH, TEXT, pre_trained_vector_type)
@@ -96,7 +96,7 @@ if __name__ == "__main__":
     """ Training """
     optimizer = get_default_optimizer(model)
     criterion = torch.nn.NLLLoss()
-    train(model, train_iter, 5000, optimizer, criterion)
+    train(model.to(device), train_iter, 5000, optimizer, criterion)
 
 
 
