@@ -81,7 +81,6 @@ class MultiHeadAttention(nn.Module):
         """
         batch_number = query.size(0)
         # get the 3 vectors, transpose so heads are not invloved in further attention calculation, heads are like channels and should not be involved until we cat them
-        print(query.shape, key.shape, value.shape)
         query, key, value = \
             [matrix(x).view(batch_number, -1, self.heads_number, self.vector_size).transpose(1, 2) 
                 for matrix, x in zip(self.vector_matrix, [query, key, value])]

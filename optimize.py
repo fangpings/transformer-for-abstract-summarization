@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import logging
+import time
 
 from utils import execute_and_time
 
@@ -59,18 +60,22 @@ def run_one_train(model, batch_tuple, optimizer, criterion):
     return loss.item() / batch_size
 
 def train(model, batch_iter, iters, optimizer, criterion, print_every=500):
-    logger.info('Start traning')
+    logger.info('Start training')
+    time1 = time.time()
     for i, batch in enumerate(batch_iter):
         if i == iters:
             logger.info('Training over.')
             return
-        if i % print_every:
-            loss, time = execute_and_time(run_one_train, model, batch, optimizer, criterion, customize=True)
-            remaining_time = (iters - i) * time
-            rem_str = '%d min %d s' % (time // 60, time % 60)
+        
+        loss = run_one_train(model, batch, optimizer, criterion)
+        
+        if i % print_every == 0 and i != 0:
+            time2 = time.time()
+            remaining_time = (iters - i) * ((time2 - time1) / print_every)
+            rem_str = '%d min %d s' % (remaining_time // 60, remaining_time % 60)
             logger.info(f'Iteration: {i}, loss: {loss}, estimated remaining time: {rem_str}')
-        else:
-            run_one_train(model, batch, optimizer, criterion)
+            time1 = time2
+            
         
 
 

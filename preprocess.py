@@ -68,7 +68,7 @@ class Batch():
 
         seq_len = batch.size(1)
         mask2 = np.triu(np.ones((1, seq_len, seq_len), dtype='uint8'), k=1)
-        mask2 = torch.from_numpy(mask2, device=self.device) == 0
+        mask2 = (torch.from_numpy(mask2).to(self.device)) == 0
 
         return (mask1 & mask2).unsqueeze(1)
 
