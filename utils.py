@@ -3,8 +3,12 @@ import torch.nn as nn
 import copy
 import logging
 import time
+import os
 
 logger = logging.getLogger()
+
+MAX_MODEL_NUM = 3
+MODEL_PATH = './model'
 
 def clones(module, N):
     """Produce N identical layers."""
@@ -48,3 +52,18 @@ def execute_and_time(func, *args, **kwargs):
         return output
     else:
         return output, time2 - time1
+
+def save_model(model):
+    if not os.path.exists(MODEL_PATH):
+        os.mkdir(MODEL_PATH)
+    files = os.listdir(MODEL_PATH)
+    files = filter(lambda x: x.endswith('.pt'), files)
+    files = sorted(files, key=lambda x: os.path.getctime(os.path.join(MODEL_PATH, x)))
+    if len(files) > MAX_MODEL_NUM:
+        models_to_delete = MAX_MODEL_NUM - len(files)
+        for i in range(models_to_delete):
+            os.remove(os.path.join(MODEL_PATH, files[i]))
+    time_str = '-'.join(time.strftime('%x_%X').split('/'))
+    path = os.path.join(MODEL_PATH, 'model_' + time_str + '.pt')
+    torch.save(model.state_dict(), path)
+    logger.info('Model saved.')

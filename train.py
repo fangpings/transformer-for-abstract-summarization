@@ -6,12 +6,14 @@ import time
 import datetime
 import logging
 import sys
+import argparse
 
 from utils import execute_and_time, get_device, itos
 from preprocess import Batch, embedding_param
 from model import Transformer
 from optimize import get_default_optimizer, train
 
+""" Logging """
 LOG_FILE = False
 logger = logging.getLogger()
 formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
@@ -24,15 +26,20 @@ stream_handler.setFormatter(formatter)
 logger.addHandler(stream_handler)
 logger.setLevel(logging.INFO)
 
+""" Argument """
+parser = argparse.ArgumentParser()
+parser.add_argument('-g', '--gpu', type=int, default=0, help='designate the gpu you want to use')
+
+""" Data Path """
 DATA_PATH = 'data/'
 SAMPLE_DATA_PATH = f'{DATA_PATH}sample_data/'
 PROCESSED_DATA_PATH = f'{DATA_PATH}processed_data/'
 
+""" Parameters """
 VERBOSE = True
 def verbose_log(msg):
     if VERBOSE:
         logger.info(msg)
-
 pre_trained_vector_type = 'glove.6B.200d' 
 batch_size = 64
 device = get_device()
@@ -42,6 +49,14 @@ fix_length = 80
 
 #%%
 if __name__ == "__main__":
+    args = parser.parse_args()
+    try:
+        assert args.gpu < 4 and args.gpu >= 0
+    except AssertionError:
+        logger.warning('GPU number must be 0, 1, 2, 3, using: 0')
+    else:
+        device = get_device(args.gpu)
+
     """ Data loading and preprocessing """
     tokenizer = data.get_tokenizer('spacy')
     TEXT = data.Field(tokenize=tokenizer, lower=True, eos_token='_eos_', fix_length=fix_length)

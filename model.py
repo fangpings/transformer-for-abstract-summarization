@@ -4,6 +4,7 @@ from torch.autograd import Variable
 import torch.nn.functional as F
 from utils import clones
 import math
+from preprocess import Batch
 
 DROP_PROB = 0.1  # in original paper, they use this value
 
@@ -212,3 +213,21 @@ class Transformer(nn.Module):
         encoder_output = self.encoder(input_tensor, encoder_mask)
         decoder_output = self.decoder(target_tensor, encoder_output, decoder_mask)
         return F.log_softmax(self.last_liner(decoder_output), dim=-1)
+    
+    def greedy_decode(self, input_tensor, max_length, vocabulary):
+        """
+        input_tensor -> (batch_size, seq_len)
+        """
+        encoder_mask = Batch.create_src_mask(input_tensor, vocabulary)
+        encoder_output = self.encoder(input_tensor, encoder_mask)
+        batch_size = input_tensor.size(0)
+        sos = vocabulary.stoi['<sos>']
+        output = torch.ones(batch_size, 1).fill_(sos).type_as(input_tensor.data)
+        for i in range(max_length - 1):
+            decoder_mask = Batch.create_tgt_mask(output, vocabulary)
+            decoder_output = self.decoder(output, encoder_output, decoder_mask)
+            next_word = F.log_softmax(self.last_liner(decoder_output), dim=-1)
+            next_word = torch.argmax(next_word, dim=-1)
+            output = torch.cat((output, next_word), dim=-1)
+        
+        return output

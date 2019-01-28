@@ -3,7 +3,7 @@ import torch.nn as nn
 import logging
 import time
 
-from utils import execute_and_time, estimate_time
+from utils import execute_and_time, estimate_time, save_model
 
 logger = logging.getLogger()
 
@@ -59,8 +59,9 @@ def run_one_train(model, batch_tuple, optimizer, criterion):
 
     return loss.item() / batch_size
 
-def train(model, batch_iter, iters, optimizer, criterion, print_every=500):
+def train(model, batch_iter, iters, optimizer, criterion, print_every=500, save_every=7500):
     logger.info('Start training')
+    model.train()
     time1 = time.time()
     for i, batch in enumerate(batch_iter):
         if i == iters:
@@ -74,11 +75,6 @@ def train(model, batch_iter, iters, optimizer, criterion, print_every=500):
             rem_str = estimate_time(time2, time1)
             logger.info(f'Iteration: {i}, loss: {loss}, estimated remaining time: {rem_str}')
             time1 = time2
+        if i % save_every == 0 and i != 0:
+            save_model(model)
             
-        
-
-
-
-
-
-
